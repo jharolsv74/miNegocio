@@ -1,0 +1,308 @@
+databaseChangeLog:
+
+  # Tabla: Empresa
+  - changeSet:
+      id: 002-create-empresa-table
+      author: jharol
+      changes:
+        - createTable:
+            tableName: empresa
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: nombre
+                  type: VARCHAR(200)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ruc
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: correo
+                  type: VARCHAR(150)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: creado_en
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+      rollback:
+        - dropTable:
+            tableName: empresa
+
+  - changeSet:
+      id: 003-create-empresa-unique-index
+      author: jharol
+      changes:
+        - addUniqueConstraint:
+            columnNames: ruc
+            tableName: empresa
+            constraintName: uq_empresa_ruc
+      rollback:
+        - dropUniqueConstraint:
+            tableName: empresa
+            constraintName: uq_empresa_ruc
+
+  # Tabla: Cliente
+  - changeSet:
+      id: 004-create-cliente-table
+      author: jharol
+      changes:
+        - createTable:
+            tableName: cliente
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: empresa_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: tipo_identificacion
+                  type: VARCHAR(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: numero_identificacion
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: nombres
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: correo
+                  type: VARCHAR(150)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: celular
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: creado_en
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+      rollback:
+        - dropTable:
+            tableName: cliente
+
+  - changeSet:
+      id: 005-add-cliente-fk-empresa
+      author: jharol
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: cliente
+            baseColumnNames: empresa_id
+            referencedTableName: empresa
+            referencedColumnNames: id
+            constraintName: fk_cliente_empresa
+            onDelete: CASCADE
+      rollback:
+        - dropForeignKeyConstraint:
+            baseTableName: cliente
+            constraintName: fk_cliente_empresa
+
+  - changeSet:
+      id: 006-add-cliente-unique-per-empresa
+      author: jharol
+      changes:
+        # Unicidad: una empresa no puede tener dos clientes con la misma cedula o ruc
+        - addUniqueConstraint:
+            tableName: cliente
+            columnNames: empresa_id, tipo_identificacion, numero_identificacion
+            constraintName: uq_cliente_empresa_tipo_numero
+      rollback:
+        - dropUniqueConstraint:
+            tableName: cliente
+            constraintName: uq_cliente_empresa_tipo_numero
+
+  - changeSet:
+      id: 007-add-cliente-search-indexes
+      author: jharol
+      changes:
+        - createIndex:
+            tableName: cliente
+            indexName: idx_cliente_numero_identificacion
+            columns:
+              - column:
+                  name: numero_identificacion
+        - createIndex:
+            tableName: cliente
+            indexName: idx_cliente_nombres_lower
+            columns:
+              - column:
+                  name: nombres
+      rollback:
+        - dropIndex:
+            tableName: cliente
+            indexName: idx_cliente_numero_identificacion
+        - dropIndex:
+            tableName: cliente
+            indexName: idx_cliente_nombres_lower
+
+  # Tabla: direccion (direcciones/sucursales de cliente)
+  - changeSet:
+      id: 008-create-direccion-table
+      author: jharol
+      changes:
+        - createTable:
+            tableName: direccion
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: cliente_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: provincia
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ciudad
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: direccion_texto
+                  type: VARCHAR(500)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: es_matriz
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: creado_en
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+      rollback:
+        - dropTable:
+            tableName: direccion
+
+  - changeSet:
+      id: 009-add-direccion-fk-cliente
+      author: jharol
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: direccion
+            baseColumnNames: cliente_id
+            referencedTableName: cliente
+            referencedColumnNames: id
+            constraintName: fk_direccion_cliente
+            onDelete: CASCADE
+      rollback:
+        - dropForeignKeyConstraint:
+            baseTableName: direccion
+            constraintName: fk_direccion_cliente
+
+  - changeSet:
+      id: 010-add-direccion-indexes
+      author: jharol
+      changes:
+        - createIndex:
+            tableName: direccion
+            indexName: idx_direccion_cliente
+            columns:
+              - column:
+                  name: cliente_id
+        - createIndex:
+            tableName: direccion
+            indexName: idx_direccion_es_matriz
+            columns:
+              - column:
+                  name: es_matriz
+      rollback:
+        - dropIndex:
+            tableName: direccion
+            indexName: idx_direccion_cliente
+        - dropIndex:
+            tableName: direccion
+            indexName: idx_direccion_es_matriz
+
+  # Garantizar que solo exista 1 direccion matriz por cliente
+  # en PostgreSQL se crea un INDEX UNIQUE parcial: UNIQUE(cliente_id) WHERE es_matriz = true
+  # Liquibase crea esto con un changeSet sql.
+  - changeSet:
+      id: 011-create-unique-partial-index-direccion_matriz
+      author: jharol
+      changes:
+        - sql:
+            stripComments: true
+            splitStatements: false
+            sql: |
+              CREATE UNIQUE INDEX uq_direccion_unica_matriz_per_cliente ON direccion (cliente_id)
+              WHERE es_matriz = true;
+      rollback:
+        - sql:
+            splitStatements: false
+            sql: |
+              DROP INDEX IF EXISTS uq_direccion_unica_matriz_per_cliente;
+
+  # Datos de ejemplo
+  - changeSet:
+      id: 012-insert-sample-empresa
+      author: jharol
+      changes:
+        - insert:
+            tableName: empresa
+            columns:
+              - column:
+                  name: nombre
+                  value: "AlquimiaSoft"
+              - column:
+                  name: ruc
+                  value: "0999999999001"
+              - column:
+                  name: correo
+                  value: "soporte@alquimiasoft.com"
+      rollback:
+        - delete:
+            tableName: empresa
+            where: "ruc = '0999999999001'"
+
+  - changeSet:
+      id: 013-insert-sample-cliente-y-direccion
+      author: jharol
+      changes:
+        - sql:
+            splitStatements: false
+            sql: |
+              INSERT INTO cliente (empresa_id, tipo_identificacion, numero_identificacion, nombres, correo, celular)
+              VALUES ((SELECT id FROM empresa WHERE ruc='0999999999001' LIMIT 1), 'CEDULA', '0102030405', 'Juan Perez', 'juan.perez@example.com', '0999999999');
+
+              INSERT INTO direccion (cliente_id, provincia, ciudad, direccion_texto, es_matriz)
+              VALUES ((SELECT id FROM cliente WHERE numero_identificacion='0102030405' LIMIT 1), 'Pichincha', 'Quito', 'Av. Principal 123', true);
+      rollback:
+        - sql:
+            splitStatements: false
+            sql: |
+              DELETE FROM direccion WHERE direccion_texto = 'Av. Principal 123';
+              DELETE FROM cliente WHERE numero_identificacion = '0102030405';

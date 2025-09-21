@@ -1,0 +1,291 @@
+{
+	"info": {
+		"_postman_id": "56dabe8f-2adc-4315-abfc-ddfeae0a7d11",
+		"name": "MiNegocio API",
+		"description": "Colección de endpoints para el ejercicio de la empresa Alquimiasoft",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38461928"
+	},
+	"item": [
+		{
+			"name": "Buscar cliente por Criterio",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/clientes/buscar?empresaId={{empresaId}}&busqueda={{criterio}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"clientes",
+						"buscar"
+					],
+					"query": [
+						{
+							"key": "empresaId",
+							"value": "{{empresaId}}"
+						},
+						{
+							"key": "busqueda",
+							"value": "{{criterio}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Crear Cliente",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"empresaId\": 1,\r\n    \"tipoIdentificacion\": \"CEDULA\",\r\n    \"numeroIdentificacion\": \"1234567860\",\r\n    \"nombres\": \"Test User\",\r\n    \"email\": \"test@test.com\",\r\n    \"celular\": \"0999888777\",\r\n    \"direccionMatriz\": {\r\n        \"provincia\": \"Test\",\r\n        \"ciudad\": \"Test\",\r\n        \"direccion\": \"Test Address\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/clientes",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"clientes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Buscar cliente por Id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/clientes/{{clienteId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"clientes",
+						"{{clienteId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Actualizar cliente",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"tipoIdentificacion\": \"CEDULA\",\r\n    \"numeroIdentificacion\": \"1234567740\",\r\n    \"nombres\": \"Juan Carlos Pérez\",\r\n    \"correo\": \"juan.perez.nuevo@email.com\",\r\n    \"celular\": \"0999888666\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/clientes/{{clienteId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"clientes",
+						"{{clienteId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Eliminar cliente",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"tipoIdentificacion\": \"CEDULA\",\r\n    \"numeroIdentificacion\": \"1234567740\",\r\n    \"nombres\": \"Juan Carlos Pérez\",\r\n    \"correo\": \"juan.perez.nuevo@email.com\",\r\n    \"celular\": \"0999888666\"\r\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/clientes/{{clienteId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"clientes",
+						"{{clienteId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Crear nueva dirección al cliente",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"clienteId\": 2,\r\n    \"provincia\": \"Azuay\",\r\n    \"ciudad\": \"Cuenca\",\r\n    \"direccion\": \"Calle Larga 7-07 y Borrero\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/clientes/direcciones",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"clientes",
+						"direcciones"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Buscar direcciones del cliente",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/clientes/{{clienteId}}/direcciones",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"clientes",
+						"{{clienteId}}",
+						"direcciones"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Buscar todos los clientes por Empresa",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/clientes/buscar?empresaId={{empresaId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"clientes",
+						"buscar"
+					],
+					"query": [
+						{
+							"key": "empresaId",
+							"value": "{{empresaId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Buscar direcciones del cliente (solo adicionales)",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/clientes/{{clienteId}}/direcciones/adicionales",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"clientes",
+						"{{clienteId}}",
+						"direcciones",
+						"adicionales"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Buscar direcciones del cliente (matriz)",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/clientes/{{clienteId}}/direcciones/matriz",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"clientes",
+						"{{clienteId}}",
+						"direcciones",
+						"matriz"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": ""
+		},
+		{
+			"key": "clienteId",
+			"value": ""
+		},
+		{
+			"key": "empresaId",
+			"value": ""
+		},
+		{
+			"key": "criterio",
+			"value": ""
+		}
+	]
+}

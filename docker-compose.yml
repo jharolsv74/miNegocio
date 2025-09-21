@@ -1,0 +1,96 @@
+version: '3.8'
+
+services:
+  # Base de datos PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: minegocio-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: mi_negocio_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 161676
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/scripts:/docker-entrypoint-initdb.d
+    networks:
+      - minegocio-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d mi_negocio_db"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Backend Spring Boot
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: minegocio-backend
+    restart: unless-stopped
+    environment:
+      # Configuración de base de datos
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/mi_negocio_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 161676
+      
+      # Configuración de Liquibase
+      SPRING_LIQUIBASE_CHANGE_LOG: classpath:db/changelog/db.changelog-master.yaml
+      
+      # Configuración JPA
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      SPRING_JPA_SHOW_SQL: false
+      SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: true
+      
+      # Configuración del servidor
+      SERVER_PORT: 8080
+      
+      # Profile activo
+      SPRING_PROFILES_ACTIVE: docker
+      
+      # Configuración de logs
+      LOGGING_LEVEL_COM_ALQUIMIASOFT: INFO
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK: INFO
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - minegocio-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Frontend React
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_BASE_URL: http://localhost:3000
+    container_name: minegocio-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - minegocio-network
+
+# Volúmenes persistentes
+volumes:
+  postgres_data:
+    driver: local
+
+# Red personalizada
+networks:
+  minegocio-network:
+    driver: bridge
+    name: minegocio-net
