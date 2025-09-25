@@ -9,4 +9,5 @@ spring:
     show-sql: true
   liquibase:
     enabled: true
+    clear-checksums: true # borra los checksums previos
     change-log: classpath:db/changelog/db.changelog-master.yaml

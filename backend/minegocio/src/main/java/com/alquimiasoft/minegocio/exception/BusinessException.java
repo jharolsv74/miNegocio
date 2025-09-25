@@ -9,10 +9,6 @@ public class BusinessException extends RuntimeException {
         super(message);
     }
 
-    public BusinessException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
     public static BusinessException clienteYaExiste(String numeroIdentificacion) {
         return new BusinessException("Ya existe un cliente con el número de identificación: " + numeroIdentificacion);
     }

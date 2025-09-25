@@ -100,7 +100,7 @@ class ClienteIntegrationTest {
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
 
-        // Extraer ID del cliente creado (esto es simplificado, en un test real usarías JSON parsing)
+        // Extraer ID del cliente creado
         Long clienteId = 1L; // Asumiendo que es el primer cliente
 
         // Ahora actualizar
@@ -147,8 +147,6 @@ class ClienteIntegrationTest {
     @Test
     void obtenerCliente_ConIdExistente_DeberiaRetornarCliente() throws Exception {
         // Esto asume que existe un cliente con ID 1 en la base de datos de test
-        // En un entorno real, crearías el cliente primero o usarías datos de prueba predefinidos
-        
         mockMvc.perform(get("/api/clientes/{id}", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
